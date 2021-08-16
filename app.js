@@ -1,44 +1,26 @@
 const express = require('express')
+const {Todo} = require('./models')
 const app = express()
 const port = 3000
-const todos = [
-  {
-    id:1,
-    todo: 'clean up'
-  },
-  {
-    id:2,
-    todo: 'go buy groceries'
-  },
-  {
-    id:3,
-    todo: 'car oil change'
-  },
-  {
-    id:4,
-    todo: 'study for test'
-  }
-]
 
 app.use(express.json())
 
 app.get('/', (req, res) => res.send('Hello world!'))
-app.get('/todos', (req, res) => {
+app.get('/todos', async (req, res) => {
+  const todos = await Todo.findAll()
   res.send(todos)
 })
-app.post('/todo', (req, res) => {
-
-  todos.push(req.body)
-  res.send(todos)
+app.post('/todo', async (req, res) => {
+  const todo = await Todo.create(req.body)
+  res.send(todo)
 })
-app.put('/todo/:id', (req, res) => {
-  const selectedTodo = todos[req.params.id -1]
-  selectedTodo.todo = req.body.todo
-  res.send(selectedTodo) 
+app.put('/todo/:id', async (req, res) => {
+  const todoUpdated = await Todo.update({ todo: req.body.todo}, {where: { id: req.params.id }})
+  res.send(todoUpdated) 
 })
-app.delete('/todo/:id', (req, res) => {
-  const selectedTodo = todos.splice(req.params.id)
-  res.send(selectedTodo) 
+app.delete('/todo/:id', async (req, res) => {
+  await Todo.destroy({ where: { id: req.params.id }})
+  res.sendStatus(200) 
 })
 
 app.listen(port, () => console.log('server started'))
