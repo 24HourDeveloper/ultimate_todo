@@ -24,4 +24,4 @@ app.delete('/todo/:id', async (req, res) => {
   res.sendStatus(200) 
 })
 
-app.listen(port, () => console.log('server started'))
+app.listen(process.env.PORT || port, () => console.log('server started'))
